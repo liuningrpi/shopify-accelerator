@@ -1,0 +1,16 @@
+[
+  {
+    "success": false,
+    "error": "Shopify GraphQL request failed",
+    "data": {
+      "title": "Jar - Panda Color-Stripe",
+      "sku": "SHXM-J-pcs",
+      "price": 149,
+      "quantity": 10,
+      "description": "Jar - Panda Color-Stripe - High quality product from SHXM",
+      "productType": "",
+      "vendor": "SHXM",
+      "tags": []
+    }
+  }
+]
