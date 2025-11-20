@@ -1,6 +1,6 @@
 // inventoryManager.js - Manage product inventory in Shopify
 import { shopifyGraphQL } from "./shopifyClient.js";
-import { updateVariantREST, addProductImageREST } from "./restClient.js";
+import { updateVariantREST, addProductImageREST, createProductWithVariantsREST } from "./restClient.js";
 import fs from "fs";
 import path from "path";
 
@@ -350,10 +350,102 @@ async function findVariantBySku(sku) {
   return data.productVariants.edges[0]?.node || null;
 }
 
+// Create product with multiple variants
+export async function createProductWithVariants(variantsData) {
+  // Get common product info from first variant
+  const firstVariant = variantsData[0];
+
+  // Extract unique option values
+  const optionValues = [...new Set(variantsData.map(v => v.option1Value).filter(Boolean))];
+
+  // Build options array
+  const options = [];
+  if (firstVariant.option1Name && optionValues.length > 0) {
+    options.push({
+      name: firstVariant.option1Name,
+      values: optionValues
+    });
+  }
+
+  // Build variants array with inventory set to 0
+  const variants = variantsData.map(v => ({
+    option1: v.option1Value,
+    price: v.price.toString(),
+    sku: v.sku,
+    inventory_management: "shopify",  // Track inventory
+    inventory_policy: "deny",  // Don't allow purchases when out of stock
+    inventory_quantity: 0  // Set stock to 0
+  }));
+
+  // Prepare images for variants
+  const images = [];
+  for (let i = 0; i < variantsData.length; i++) {
+    const variantData = variantsData[i];
+    if (variantData.imagePath && fs.existsSync(variantData.imagePath)) {
+      try {
+        const imageBuffer = fs.readFileSync(variantData.imagePath);
+        const base64Image = imageBuffer.toString('base64');
+        const extension = path.extname(variantData.imagePath).toLowerCase();
+
+        let mimeType = 'image/jpeg';
+        if (extension === '.png') mimeType = 'image/png';
+        else if (extension === '.gif') mimeType = 'image/gif';
+        else if (extension === '.webp') mimeType = 'image/webp';
+
+        images.push({
+          attachment: base64Image,
+          filename: path.basename(variantData.imagePath),
+          alt: variantData.imageAlt || variantData.title,
+          position: i + 1,
+          variant_ids: []  // Will be populated after variants are created
+        });
+      } catch (error) {
+        console.log(`⚠️  Failed to read image ${variantData.imagePath}: ${error.message}`);
+      }
+    }
+  }
+
+  // Build product data with images
+  const productData = {
+    title: firstVariant.title,
+    body_html: firstVariant.description || "",
+    vendor: firstVariant.vendor,
+    product_type: firstVariant.productType,
+    tags: firstVariant.tags.join(', '),
+    status: "active",
+    options: options,
+    variants: variants,
+    images: images.length > 0 ? images : undefined
+  };
+
+  console.log(`🔨 Creating product with ${variants.length} variants and ${images.length} images...`);
+  const product = await createProductWithVariantsREST(productData);
+
+  // After product is created, associate images with specific variants
+  if (images.length > 0 && product.variants) {
+    for (let i = 0; i < Math.min(images.length, product.variants.length); i++) {
+      try {
+        const variantId = product.variants[i].id;
+        const imageId = product.images[i].id;
+
+        // Update variant to associate with image
+        await updateVariantREST(`gid://shopify/ProductVariant/${variantId}`, {
+          image_id: imageId
+        });
+        console.log(`   📸 Associated image with variant: ${variantsData[i].option1Value}`);
+      } catch (error) {
+        console.log(`   ⚠️  Failed to associate image with variant: ${error.message}`);
+      }
+    }
+  }
+
+  return product;
+}
+
 // Bulk add products to inventory
 export async function bulkAddToInventory(productsData) {
   const results = [];
-  
+
   for (const productData of productsData) {
     try {
       const variant = await findOrCreateProduct(productData);
@@ -363,10 +455,10 @@ export async function bulkAddToInventory(productsData) {
       console.error(`❌ Failed to process ${productData.title}:`, error.message);
       results.push({ success: false, error: error.message, data: productData });
     }
-    
+
     // Small delay to avoid rate limiting
     await new Promise(resolve => setTimeout(resolve, 500));
   }
-  
+
   return results;
 }

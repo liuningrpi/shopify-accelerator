@@ -1,56 +1,14 @@
 [
   {
-    "title": "Jar - Panda Color-Stripe",
-    "sku": "SHXM-JARPANDA-001",
-    "shopify_variant_id": "gid://shopify/ProductVariant/47010434580716",
-    "shopify_product_id": "gid://shopify/Product/9084400369900"
+    "title": "Test Cup",
+    "sku": "TEST-JAR-TC-20251120-PINK",
+    "shopify_variant_id": 47021379748076,
+    "shopify_product_id": "unknown"
   },
   {
-    "title": "Jar - Panda Mermaid ",
-    "sku": "SHXM-JARPANDA-002",
-    "shopify_variant_id": "gid://shopify/ProductVariant/47010434613484",
-    "shopify_product_id": "gid://shopify/Product/9084400402668"
-  },
-  {
-    "title": "Pink Orca Large Round Plate",
-    "sku": "SHXM-PINKORCA-003",
-    "shopify_variant_id": "gid://shopify/ProductVariant/47010434646252",
-    "shopify_product_id": "gid://shopify/Product/9084400435436"
-  },
-  {
-    "title": "Panda Croissant Deep Plate",
-    "sku": "SHXM-PANDACRO-004",
-    "shopify_variant_id": "gid://shopify/ProductVariant/47010434679020",
-    "shopify_product_id": "gid://shopify/Product/9084400468204"
-  },
-  {
-    "title": "Bunny Apple Plate",
-    "sku": "SHXM-BUNNYAPP-005",
-    "shopify_variant_id": "gid://shopify/ProductVariant/47010434711788",
-    "shopify_product_id": "gid://shopify/Product/9084400500972"
-  },
-  {
-    "title": "Pink Orca Square Plate",
-    "sku": "SHXM-PINKORCA-006",
-    "shopify_variant_id": "gid://shopify/ProductVariant/47010434744556",
-    "shopify_product_id": "gid://shopify/Product/9084400533740"
-  },
-  {
-    "title": "Pink Orca Mug with Handle",
-    "sku": "SHXM-PINKORCA-007",
-    "shopify_variant_id": "gid://shopify/ProductVariant/47010434777324",
-    "shopify_product_id": "gid://shopify/Product/9084400566508"
-  },
-  {
-    "title": "Panda Layered Checkered Cup",
-    "sku": "SHXM-PANDALAY-008",
-    "shopify_variant_id": "gid://shopify/ProductVariant/47010434842860",
-    "shopify_product_id": "gid://shopify/Product/9084400632044"
-  },
-  {
-    "title": "Panda Layered Striped Cup",
-    "sku": "SHXM-PANDALAY-009",
-    "shopify_variant_id": "gid://shopify/ProductVariant/47010434875628",
-    "shopify_product_id": "gid://shopify/Product/9084400664812"
+    "title": "Test Cup",
+    "sku": "TEST-JAR-TC-20251120-GRAY",
+    "shopify_variant_id": 47021379780844,
+    "shopify_product_id": "unknown"
   }
 ]

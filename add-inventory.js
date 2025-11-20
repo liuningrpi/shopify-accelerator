@@ -1,7 +1,7 @@
 // add-inventory.js - Add products to Shopify inventory from test.csv
 import fs from "fs";
 import { parse } from "csv-parse/sync";
-import { bulkAddToInventory } from "./inventoryManager.js";
+import { bulkAddToInventory, findOrCreateProduct, createProductWithVariants } from "./inventoryManager.js";
 
 async function addInventoryFromCsv() {
   try {
@@ -16,24 +16,54 @@ async function addInventoryFromCsv() {
       // Handle new CSV structure: Pic Name, Title, Vendor, Variant Price
       const title = row.Title || row.title || "";
       const vendor = row.Vendor || row.vendor || "";
-      
+
+      // Default product type (needed before SKU generation)
+      const productType = row.Type || row.type || row.product_type || "Kitchenware";
+
+      // Check if product has variants (options)
+      const option1Name = row["Option1 Name"] || row.option1_name || "";
+      const option1Value = row["Option1 Value"] || row.option1_value || "";
+      const hasVariants = !!(option1Name && option1Value);
+
       // Generate SKU from title and vendor if not provided
+      // New format: VENDOR-TYPE-INITIALS-DATE[-OPTIONVALUE]
       let sku = row.SKU || row.sku || "";
       if (!sku && title) {
-        // Create SKU from vendor and title (remove spaces, special chars, limit length)
-        const vendorCode = vendor.replace(/[^A-Z0-9]/gi, '').substring(0, 4).toUpperCase() || 'PROD';
-        const titleCode = title.replace(/[^A-Z0-9]/gi, '').substring(0, 8).toUpperCase();
-        sku = `${vendorCode}-${titleCode}-${String(index + 1).padStart(3, '0')}`;
+        // 1. Vendor name (clean, uppercase)
+        const vendorCode = vendor.replace(/[^A-Z0-9]/gi, '').toUpperCase() || 'UNKNOWN';
+
+        // 2. Product type (clean, uppercase)
+        const typeCode = productType.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+
+        // 3. Extract initials from title (first letter of each word)
+        const titleWords = title.split(/[\s\-,\.]+/).filter(word => word.length > 0);
+        const initials = titleWords
+          .map(word => word.charAt(0).toUpperCase())
+          .join('');
+
+        // 4. Current date in YYYYMMDD format
+        const today = new Date();
+        const dateCode = today.getFullYear() +
+                        String(today.getMonth() + 1).padStart(2, '0') +
+                        String(today.getDate()).padStart(2, '0');
+
+        // 5. Base SKU
+        let baseSku = `${vendorCode}-${typeCode}-${initials}-${dateCode}`;
+
+        // 6. Append option value if this is a variant
+        if (hasVariants) {
+          const optionCode = option1Value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+          sku = `${baseSku}-${optionCode}`;
+        } else {
+          sku = baseSku;
+        }
       }
-      
+
       // Use Variant Price column
       let price = parseFloat(row["Variant Price"] || row.price || row.Price || "0");
-      
+
       // Default quantity
       const quantity = parseInt(row.quantity || row.Quantity || "10", 10);
-      
-      // Default product type
-      const productType = row.Type || row.type || row.product_type || "Kitchenware";
       
       // Handle tags - create from vendor and type
       let tags = [vendor, productType].filter(Boolean);
@@ -41,11 +71,8 @@ async function addInventoryFromCsv() {
         tags = tags.concat(row.tags.split(',').map(tag => tag.trim()));
       }
 
-      // Create description from available data
+      // Use description from CSV only (leave blank if not provided)
       let description = row.description || row.Description || "";
-      if (!description && title) {
-        description = `${title} - High quality product from ${vendor}`;
-      }
 
       // Handle photo data - use Pic Name column (with BOM character handling)
       const photo = row["Pic Name"] || row["﻿Pic Name"] || row.Photo || row.photo || "";
@@ -68,7 +95,10 @@ async function addInventoryFromCsv() {
         vendor,
         tags,
         imagePath,
-        imageAlt: photoName
+        imageAlt: photoName,
+        hasVariants,
+        option1Name,
+        option1Value
       };
     }).filter(product => product.title); // Only include products with title
 
@@ -88,8 +118,53 @@ async function addInventoryFromCsv() {
     console.log("Starting inventory addition process...");
     console.log("=".repeat(60));
 
-    // Add all products to inventory
-    const results = await bulkAddToInventory(productsData);
+    // Group products by title (to handle variants)
+    const productGroups = new Map();
+    productsData.forEach(product => {
+      if (!productGroups.has(product.title)) {
+        productGroups.set(product.title, []);
+      }
+      productGroups.get(product.title).push(product);
+    });
+
+    console.log(`\n📊 Found ${productGroups.size} unique product(s) with ${productsData.length} total variant(s)`);
+
+    // Process each product group
+    const results = [];
+    for (const [title, variants] of productGroups) {
+      try {
+        if (variants.length === 1 && !variants[0].hasVariants) {
+          // Single product without variants - process normally
+          console.log(`\n📦 Processing: ${title} (single product)`);
+          const variant = await findOrCreateProduct(variants[0]);
+          results.push({ success: true, variant, data: variants[0] });
+        } else {
+          // Product with multiple variants - create as one product with options
+          console.log(`\n📦 Processing: ${title} (${variants.length} variants)`);
+          console.log(`   Option: ${variants[0].option1Name} with values: ${variants.map(v => v.option1Value).join(', ')}`);
+
+          const product = await createProductWithVariants(variants);
+
+          // Add all variants to results
+          variants.forEach((v, index) => {
+            results.push({
+              success: true,
+              variant: product.variants[index],
+              data: v
+            });
+            console.log(`   ✅ Created variant: ${v.option1Value} (SKU: ${v.sku})`);
+          });
+        }
+      } catch (error) {
+        console.error(`❌ Failed to process ${title}:`, error.message);
+        variants.forEach(v => {
+          results.push({ success: false, error: error.message, data: v });
+        });
+      }
+
+      // Small delay to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
 
     // Show summary
     const successful = results.filter(r => r.success).length;

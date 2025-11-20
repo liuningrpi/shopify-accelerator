@@ -27,15 +27,31 @@ This Node.js application manages both Shopify orders and inventory using the Sho
 2. **Prepare your CSV files:**
 
 **For inventory management** (`test.csv`) with columns:
-   - `SKU` - Product SKU
+   - `SKU` - Product SKU (optional - will be auto-generated if not provided)
    - `Title` - Product title/name
    - `Vendor` - Product vendor
-   - `Type` - Product type/category
+   - `Type` - Product type/category (defaults to "Kitchenware")
    - `Price` - Product price (USD)
    - `Price( RMB)` - Alternative price field
    - `Photo` - Image filename (optional)
    - `Photo_Name` - Image alt text (optional)
    - Additional fields are supported
+
+### 🏷️ SKU Auto-Generation
+If no SKU is provided in the CSV, the system will automatically generate one using this format:
+
+**Format:** `VENDOR-TYPE-INITIALS-DATE`
+
+**Components:**
+1. **Vendor** - Vendor name (cleaned, uppercase, alphanumeric only)
+2. **Type** - Product type (cleaned, uppercase, alphanumeric only)
+3. **Initials** - First letter of each word in the title (uppercase)
+4. **Date** - Current date in YYYYMMDD format
+
+**Examples:**
+- Title: "Jar - Panda Color-Stripe" → SKU: `SHXM-KITCHENWARE-JPCS-20251120`
+- Title: "Pink Orca Mug with Handle" → SKU: `SHXM-KITCHENWARE-POMWH-20251120`
+- Title: "Bunny Apple Plate" → SKU: `SHXM-KITCHENWARE-BAP-20251120`
 
 **For order creation** (`orders.csv`) with columns:
    - `email` - Customer email
