@@ -106,21 +106,26 @@ node create-orders.js
 
 Update inventory quantities directly from a CSV file with barcodes:
 
-**Option 1: Using the run script**
+**Option 1: Using the run script (default: delta.csv)**
 ```bash
-./run-update-inventory.sh orders.csv
+./run-update-inventory.sh
 ```
 
-**Option 2: Manual execution**
+**Option 2: With custom CSV file**
+```bash
+./run-update-inventory.sh your-file.csv
+```
+
+**Option 3: Manual execution**
 ```bash
 # Load environment variables
 export $(cat .env | grep -v ^# | xargs)
 
 # Run the inventory update script
-node update-inventory-by-barcode.js orders.csv
+node update-inventory-by-barcode.js delta.csv
 ```
 
-**CSV Format:**
+**CSV Format (delta.csv):**
 ```csv
 Barcode,Variant Inventory
 47306732,100

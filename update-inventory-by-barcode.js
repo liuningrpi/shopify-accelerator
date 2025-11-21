@@ -224,7 +224,7 @@ async function updateInventoryFromBarcodeCsv(csvFilePath) {
 }
 
 // Get CSV file from command line or use default
-const csvFile = process.argv[2] || "./orders.csv";
+const csvFile = process.argv[2] || "./delta.csv";
 
 console.log(`\n📄 Reading: ${csvFile}\n`);
 
