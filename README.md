@@ -5,8 +5,10 @@ This Node.js application manages both Shopify orders and inventory using the Sho
 ## Features
 - ✅ Create orders from CSV files
 - ✅ Add products to inventory from CSV files
+- ✅ Update inventory quantities using barcodes
 - ✅ Upload product images automatically
 - ✅ Enable inventory tracking automatically
+- ✅ Support for product variants with options
 - ✅ Bulk processing with error handling
 - ✅ Rate limiting to prevent API throttling
 
@@ -99,6 +101,42 @@ export $(cat .env | grep -v ^# | xargs)
 # Run the order creation script
 node create-orders.js
 ```
+
+### 📊 Update Inventory by Barcode
+
+Update inventory quantities directly from a CSV file with barcodes:
+
+**Option 1: Using the run script**
+```bash
+./run-update-inventory.sh orders.csv
+```
+
+**Option 2: Manual execution**
+```bash
+# Load environment variables
+export $(cat .env | grep -v ^# | xargs)
+
+# Run the inventory update script
+node update-inventory-by-barcode.js orders.csv
+```
+
+**CSV Format:**
+```csv
+Barcode,Variant Inventory
+47306732,100
+47339500,50
+```
+
+**What it does:**
+- Looks up products by barcode
+- **Adds** the quantity to existing inventory (not replace)
+- Creates update log with before/after quantities
+- Reports products not found
+
+**Example:**
+- Current stock: 10 units
+- CSV quantity: 5
+- New stock: 15 units (10 + 5)
 
 ## Requirements
 

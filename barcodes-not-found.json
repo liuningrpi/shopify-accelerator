@@ -1,0 +1,14 @@
+[
+  {
+    "barcode": "TEST-JAR-TC-20251120-PINK",
+    "quantity": 5
+  },
+  {
+    "barcode": "TEST-JAR-TC-20251120-GRAY",
+    "quantity": 3
+  },
+  {
+    "barcode": "UNKNOWN-BARCODE-123",
+    "quantity": 2
+  }
+]

@@ -1,0 +1,28 @@
+{
+  "orderId": 1271870030060,
+  "orderNumber": "#D5",
+  "createdAt": "2025-11-21T01:05:52.956Z",
+  "items": [
+    {
+      "barcode": "47306732",
+      "quantity": 1,
+      "title": "Test Cup",
+      "sku": "TEST-JAR-TC-20251120-PINK",
+      "price": "149.00"
+    },
+    {
+      "barcode": "47339500",
+      "quantity": 4,
+      "title": "Test Cup",
+      "sku": "TEST-JAR-TC-20251120",
+      "price": "149.00"
+    },
+    {
+      "barcode": "47372268",
+      "quantity": 23,
+      "title": "TTTTTT",
+      "sku": "TEST-CUP-T-20251120",
+      "price": "20.00"
+    }
+  ]
+}

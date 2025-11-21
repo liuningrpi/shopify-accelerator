@@ -1,4 +1,0 @@
-email,first_name,last_name,sku,quantity,price,shipping_address1,shipping_city,shipping_province,shipping_zip,shipping_country
-john@example.com,John,Doe,SKU123,2,49.99,123 Main St,New York,NY,10001,US
-jane@example.com,Jane,Smith,SKU456,1,99.99,456 Oak Ave,Los Angeles,CA,90210,US
-bob@example.com,Bob,Johnson,SKU789,3,29.99,789 Pine St,Chicago,IL,60601,US

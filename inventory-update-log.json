@@ -1,0 +1,34 @@
+{
+  "updatedAt": "2025-11-21T01:24:57.995Z",
+  "locationId": "gid://shopify/Location/80964288748",
+  "totalUpdated": 3,
+  "updates": [
+    {
+      "barcode": "47306732",
+      "productTitle": "Test Cup",
+      "variantTitle": "Pink",
+      "sku": "TEST-JAR-TC-20251120-PINK",
+      "oldQuantity": 1,
+      "quantityAdded": 1,
+      "newQuantity": 2
+    },
+    {
+      "barcode": "47339500",
+      "productTitle": "Test Cup",
+      "variantTitle": "Gray",
+      "sku": "TEST-JAR-TC-20251120",
+      "oldQuantity": 4,
+      "quantityAdded": 4,
+      "newQuantity": 8
+    },
+    {
+      "barcode": "47372268",
+      "productTitle": "TTTTTT",
+      "variantTitle": "Default Title",
+      "sku": "TEST-CUP-T-20251120",
+      "oldQuantity": 23,
+      "quantityAdded": 23,
+      "newQuantity": 46
+    }
+  ]
+}
