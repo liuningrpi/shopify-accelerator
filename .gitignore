@@ -1,0 +1,33 @@
+# Environment variables (contains sensitive credentials)
+.env
+.env.local
+.env.*.local
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Generated files
+barcodes-used.json
+ShopifyReady.csv
+*.log
+
+# Shopify output files
+successful-products.json
+failed-products.json
+inventory-update-log.json
+barcodes-not-found.json
+inventory-update-errors.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
