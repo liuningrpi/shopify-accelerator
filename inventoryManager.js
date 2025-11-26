@@ -260,7 +260,8 @@ export async function findOrCreateProduct({
   vendor = "",
   tags = [],
   imagePath = "",
-  imageAlt = ""
+  imageAlt = "",
+  barcode = ""
 }) {
   // First try to find existing product by SKU
   let variant = await findVariantBySku(sku);
@@ -270,11 +271,18 @@ export async function findOrCreateProduct({
     
     // Update existing variant to enable tracking and set inventory
     console.log(`🔄 Updating existing product variant to enable tracking`);
-    const updatedVariant = await updateVariantREST(variant.id, {
+    const variantUpdateData = {
       inventory_management: "shopify",
       inventory_policy: "deny", // deny = track inventory
       inventory_quantity: quantity || 0
-    });
+    };
+
+    // Add barcode if provided
+    if (barcode) {
+      variantUpdateData.barcode = barcode;
+    }
+
+    const updatedVariant = await updateVariantREST(variant.id, variantUpdateData);
     
     if (quantity > 0) {
       console.log(`✅ Updated existing product with tracking enabled and ${quantity} units`);
@@ -302,13 +310,20 @@ export async function findOrCreateProduct({
   
   // Update the variant SKU, price, and enable tracking using REST API
   console.log(`🔄 Updating variant with SKU: ${sku}, price: $${price}, and enabling inventory tracking`);
-  const updatedVariant = await updateVariantREST(defaultVariant.id, {
+  const variantData = {
     sku: sku,
     price: price.toString(),
     inventory_management: "shopify",
     inventory_policy: "deny", // deny = track inventory
     inventory_quantity: quantity || 0
-  });
+  };
+
+  // Add barcode if provided
+  if (barcode) {
+    variantData.barcode = barcode;
+  }
+
+  const updatedVariant = await updateVariantREST(defaultVariant.id, variantData);
 
   // Upload product image if provided
   if (imagePath) {
@@ -368,14 +383,23 @@ export async function createProductWithVariants(variantsData) {
   }
 
   // Build variants array with inventory set to 0
-  const variants = variantsData.map(v => ({
-    option1: v.option1Value,
-    price: v.price.toString(),
-    sku: v.sku,
-    inventory_management: "shopify",  // Track inventory
-    inventory_policy: "deny",  // Don't allow purchases when out of stock
-    inventory_quantity: 0  // Set stock to 0
-  }));
+  const variants = variantsData.map(v => {
+    const variant = {
+      option1: v.option1Value,
+      price: v.price.toString(),
+      sku: v.sku,
+      inventory_management: "shopify",  // Track inventory
+      inventory_policy: "deny",  // Don't allow purchases when out of stock
+      inventory_quantity: 0  // Set stock to 0
+    };
+
+    // Add barcode if provided
+    if (v.barcode) {
+      variant.barcode = v.barcode;
+    }
+
+    return variant;
+  });
 
   // Prepare images for variants
   const images = [];

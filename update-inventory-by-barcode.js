@@ -36,10 +36,10 @@ async function findVariantByBarcode(barcode) {
   return data.productVariants.edges[0]?.node || null;
 }
 
-// Add quantity to existing inventory using REST API
-async function addInventoryQuantity(inventoryItemId, locationId, currentQuantity, quantityToAdd) {
-  // Calculate new total
-  const newTotal = currentQuantity + quantityToAdd;
+// Set inventory quantity using REST API
+async function setInventoryQuantity(inventoryItemId, locationId, newQuantity) {
+  // Set to exact quantity from CSV
+  const newTotal = newQuantity;
 
   // Extract numeric IDs from GraphQL IDs
   const numericInventoryItemId = inventoryItemId.split('/').pop();
@@ -97,36 +97,30 @@ async function updateInventoryFromBarcodeCsv(csvFilePath) {
     // Process each row
     for (const row of rows) {
       const barcode = row.Barcode || row.barcode || "";
-      const quantityToAdd = parseInt(row["Variant Inventory"] || row["Variant Inventory Qty"] || row.quantity || "0", 10);
+      const newQuantity = parseInt(row["Variant Inventory"] || row["Variant Inventory Qty"] || row.quantity || "0", 10);
 
       if (!barcode) {
         console.log(`⚠️  Skipping row with empty barcode`);
         continue;
       }
 
-      if (quantityToAdd === 0) {
-        console.log(`⚠️  Skipping ${barcode} - quantity is 0`);
-        continue;
-      }
-
-      console.log(`🔍 ${barcode} → Add ${quantityToAdd} units`);
+      console.log(`🔍 ${barcode} → Set to ${newQuantity} units`);
 
       try {
         const variant = await findVariantByBarcode(barcode);
 
         if (variant) {
           const currentQty = variant.inventoryQuantity || 0;
-          const newTotal = currentQty + quantityToAdd;
 
           console.log(`   ✅ ${variant.product.title} - ${variant.title}`);
-          console.log(`      SKU: ${variant.sku} | Current: ${currentQty} + ${quantityToAdd} = ${newTotal}`);
+          console.log(`      SKU: ${variant.sku} | Current: ${currentQty} → New: ${newQuantity}`);
 
           // Update inventory
           try {
             const inventoryItemId = variant.inventoryItem.id;
-            await addInventoryQuantity(inventoryItemId, locationId, currentQty, quantityToAdd);
+            await setInventoryQuantity(inventoryItemId, locationId, newQuantity);
 
-            console.log(`      ✅ Updated (+${quantityToAdd})`);
+            console.log(`      ✅ Updated to ${newQuantity} units`);
 
             updatedProducts.push({
               barcode,
@@ -134,8 +128,7 @@ async function updateInventoryFromBarcodeCsv(csvFilePath) {
               variantTitle: variant.title,
               sku: variant.sku,
               oldQuantity: currentQty,
-              quantityAdded: quantityToAdd,
-              newQuantity: newTotal
+              newQuantity: newQuantity
             });
           } catch (error) {
             console.log(`      ❌ Failed to update: ${error.message}`);
@@ -143,7 +136,7 @@ async function updateInventoryFromBarcodeCsv(csvFilePath) {
           }
         } else {
           console.log(`   ❌ Not found in inventory`);
-          notFoundBarcodes.push({ barcode, quantityToAdd: quantityToAdd });
+          notFoundBarcodes.push({ barcode, desiredQuantity: newQuantity });
         }
       } catch (error) {
         console.error(`   ❌ Error: ${error.message}`);
@@ -177,10 +170,6 @@ async function updateInventoryFromBarcodeCsv(csvFilePath) {
       );
 
       console.log(`\n💾 Update log saved to: inventory-update-log.json`);
-
-      // Show summary stats
-      const totalAdded = updatedProducts.reduce((sum, p) => sum + p.quantityAdded, 0);
-      console.log(`\n📦 Total units added: ${totalAdded}`);
     }
 
     // Save errors

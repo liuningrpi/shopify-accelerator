@@ -1,14 +1,20 @@
 [
   {
-    "title": "Test Cup",
-    "sku": "TEST-JAR-TC-20251120-PINK",
-    "shopify_variant_id": 47021379748076,
+    "title": "Test Panda House Flared Cup (In-Glaze)",
+    "sku": "SHXM-KITCHENWARE-TPHFC(G-20251125",
+    "shopify_variant_id": 47030693757164,
     "shopify_product_id": "unknown"
   },
   {
-    "title": "Test Cup",
-    "sku": "TEST-JAR-TC-20251120-GRAY",
-    "shopify_variant_id": 47021379780844,
+    "title": "Test Christmas Orca Footed Cup",
+    "sku": "SHXM-KITCHENWARE-TCOFC-20251125-RED",
+    "shopify_variant_id": 47030694117612,
+    "shopify_product_id": "unknown"
+  },
+  {
+    "title": "Test Christmas Orca Footed Cup",
+    "sku": "SHXM-KITCHENWARE-TCOFC-20251125-BLUE",
+    "shopify_variant_id": 47030694150380,
     "shopify_product_id": "unknown"
   }
 ]

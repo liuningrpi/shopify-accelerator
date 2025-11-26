@@ -1,3 +1,4 @@
-Barcode,Name,Stock,SalePrice,Photo,IfNew
-SHE65144E1,Test Panda House Flared Cup (In-Glaze),3,98,SHXM1.jpeg,Y
-SH03309AA4,Test Christmas Orca Footed Cup,5,160,SHXM2.jpeg,Y
+Barcode,Name,Option1 Name,Option1 Value,Variant Inventory,SalePrice,Photo,IfNew
+SH32A7B60A,Test Panda House Flared Cup (In-Glaze),,,3,98,SHXM1.jpeg,Y
+SH9A2A223B,Test Christmas Orca Footed Cup,Color,Red,5,160,SHXM2.jpeg,Y
+SHC64C0751,Test Christmas Orca Footed Cup,Color,Blue,4,160,SHXM2.jpeg,N

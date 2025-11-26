@@ -1,34 +1,31 @@
 {
-  "updatedAt": "2025-11-21T01:24:57.995Z",
+  "updatedAt": "2025-11-26T00:36:38.299Z",
   "locationId": "gid://shopify/Location/80964288748",
   "totalUpdated": 3,
   "updates": [
     {
-      "barcode": "47306732",
-      "productTitle": "Test Cup",
-      "variantTitle": "Pink",
-      "sku": "TEST-JAR-TC-20251120-PINK",
-      "oldQuantity": 1,
-      "quantityAdded": 1,
-      "newQuantity": 2
-    },
-    {
-      "barcode": "47339500",
-      "productTitle": "Test Cup",
-      "variantTitle": "Gray",
-      "sku": "TEST-JAR-TC-20251120",
-      "oldQuantity": 4,
-      "quantityAdded": 4,
-      "newQuantity": 8
-    },
-    {
-      "barcode": "47372268",
-      "productTitle": "TTTTTT",
+      "barcode": "SH32A7B60A",
+      "productTitle": "Test Panda House Flared Cup (In-Glaze)",
       "variantTitle": "Default Title",
-      "sku": "TEST-CUP-T-20251120",
-      "oldQuantity": 23,
-      "quantityAdded": 23,
-      "newQuantity": 46
+      "sku": "SHXM-KITCHENWARE-TPHFC(G-20251125",
+      "oldQuantity": 0,
+      "newQuantity": 3
+    },
+    {
+      "barcode": "SH9A2A223B",
+      "productTitle": "Test Christmas Orca Footed Cup",
+      "variantTitle": "Red",
+      "sku": "SHXM-KITCHENWARE-TCOFC-20251125-RED",
+      "oldQuantity": 0,
+      "newQuantity": 5
+    },
+    {
+      "barcode": "SHC64C0751",
+      "productTitle": "Test Christmas Orca Footed Cup",
+      "variantTitle": "Blue",
+      "sku": "SHXM-KITCHENWARE-TCOFC-20251125-BLUE",
+      "oldQuantity": 0,
+      "newQuantity": 4
     }
   ]
 }

@@ -1,4 +1,5 @@
-﻿图,产品名称,产品英文名,产品数量,单价（元）,折扣,总价（元）,是否是新品
-Photo,NameCN,Name,Stock,PriceCN,Discount,OriginalPriceCN,IfNew
-SHXM1.jpeg,熊猫房子敛口杯(釉中),Test Panda House Flared Cup (In-Glaze),3,298,0.5,447,Y
-SHXM2.jpeg,圣诞虎鲸容天杯,Test Christmas Orca Footed Cup,5,498,0.5,1245,Y
+﻿图,产品名称,产品英文名,产品变体 （例：颜色）,变体值（例：蓝色，粉色）,产品数量,单价（元）,折扣,总价（元）,是否是新品,
+Photo,NameCN,Name,Option1 Name,Option1 Value,Variant Inventory,PriceCN,Discount,SalePriceCN,IfNew,
+SHXM1.jpeg,熊猫房子敛口杯(釉中),Test Panda House Flared Cup (In-Glaze),,,3,298,0.5,447,Y,
+SHXM2.jpeg,圣诞虎鲸容天杯,Test Christmas Orca Footed Cup,颜色,红色,5,498,0.5,1245,Y,
+SHXM2.jpeg,圣诞虎鲸容天杯,Test Christmas Orca Footed Cup,颜色,蓝色,4,498,0.5,996,N,

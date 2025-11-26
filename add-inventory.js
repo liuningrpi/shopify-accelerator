@@ -6,16 +6,16 @@ import { bulkAddToInventory, findOrCreateProduct, createProductWithVariants } fr
 async function addInventoryFromCsv() {
   try {
     // Read and parse CSV file
-    const csv = fs.readFileSync("./test.csv", "utf8");
+    const csv = fs.readFileSync("./ShopifyReady.csv", "utf8");
     const rows = parse(csv, { columns: true, skip_empty_lines: true });
 
-    console.log(`📦 Found ${rows.length} products in test.csv`);
+    console.log(`📦 Found ${rows.length} products in ShopifyReady.csv`);
 
-    // Convert CSV data to product format
+    // Convert CSV data to product format (process all rows first)
     const productsData = rows.map((row, index) => {
-      // Handle new CSV structure: Pic Name, Title, Vendor, Variant Price
-      const title = row.Title || row.title || "";
-      const vendor = row.Vendor || row.vendor || "";
+      // Handle ShopifyReady.csv structure: Barcode, Name, Option1 Name, Option1 Value, Variant Inventory, SalePrice, Photo, IfNew
+      const title = row.Name || row.name || row.Title || row.title || "";
+      const vendor = row.Vendor || row.vendor || "SHXM"; // Default to SHXM vendor
 
       // Default product type (needed before SKU generation)
       const productType = row.Type || row.type || row.product_type || "Kitchenware";
@@ -59,11 +59,11 @@ async function addInventoryFromCsv() {
         }
       }
 
-      // Use Variant Price column
-      let price = parseFloat(row["Variant Price"] || row.price || row.Price || "0");
+      // Use SalePrice column from ShopifyReady.csv
+      let price = parseFloat(row.SalePrice || row["Variant Price"] || row.price || row.Price || "0");
 
-      // Default quantity
-      const quantity = parseInt(row.quantity || row.Quantity || "10", 10);
+      // Use Variant Inventory column from ShopifyReady.csv
+      const quantity = parseInt(row["Variant Inventory"] || row.quantity || row.Quantity || "0", 10);
       
       // Handle tags - create from vendor and type
       let tags = [vendor, productType].filter(Boolean);
@@ -74,9 +74,15 @@ async function addInventoryFromCsv() {
       // Use description from CSV only (leave blank if not provided)
       let description = row.description || row.Description || "";
 
-      // Handle photo data - use Pic Name column (with BOM character handling)
-      const photo = row["Pic Name"] || row["﻿Pic Name"] || row.Photo || row.photo || "";
+      // Handle photo data - prioritize Photo column
+      const photo = row.Photo || row.photo || row["Pic Name"] || row["﻿Pic Name"] || "";
       const photoName = row.photo_name || row.photo_alt || row.Photo_Name || row.Photo_Alt || title;
+
+      // Handle barcode from CSV
+      const barcode = row.Barcode || row.barcode || "";
+
+      // Handle IfNew flag
+      const ifNew = (row.IfNew || row.ifNew || row.ifnew || '').trim().toUpperCase();
 
       // Construct image path if photo is provided
       let imagePath = "";
@@ -98,7 +104,9 @@ async function addInventoryFromCsv() {
         imageAlt: photoName,
         hasVariants,
         option1Name,
-        option1Value
+        option1Value,
+        barcode,
+        ifNew
       };
     }).filter(product => product.title); // Only include products with title
 
@@ -127,11 +135,23 @@ async function addInventoryFromCsv() {
       productGroups.get(product.title).push(product);
     });
 
-    console.log(`\n📊 Found ${productGroups.size} unique product(s) with ${productsData.length} total variant(s)`);
+    // Filter product groups - only keep groups where at least one variant has IfNew = 'Y'
+    const newProductGroups = new Map();
+    for (const [title, variants] of productGroups) {
+      const hasNewVariant = variants.some(v => v.ifNew === 'Y');
+      if (hasNewVariant) {
+        newProductGroups.set(title, variants);
+      } else {
+        console.log(`⏭️  Skipping ${title} - no variants with IfNew = 'Y'`);
+      }
+    }
+
+    const totalVariants = Array.from(newProductGroups.values()).reduce((sum, variants) => sum + variants.length, 0);
+    console.log(`\n📊 Found ${newProductGroups.size} unique product(s) to process with ${totalVariants} total variant(s)`);
 
     // Process each product group
     const results = [];
-    for (const [title, variants] of productGroups) {
+    for (const [title, variants] of newProductGroups) {
       try {
         if (variants.length === 1 && !variants[0].hasVariants) {
           // Single product without variants - process normally
@@ -209,9 +229,9 @@ async function addInventoryFromCsv() {
 
   } catch (error) {
     console.error("❌ Error processing inventory:", error.message);
-    
+
     if (error.message.includes("ENOENT")) {
-      console.log("💡 Make sure test.csv exists in the current directory");
+      console.log("💡 Make sure ShopifyReady.csv exists in the current directory");
     } else if (error.message.includes("GraphQL")) {
       console.log("💡 Check your Shopify credentials in the .env file");
     }
@@ -220,6 +240,6 @@ async function addInventoryFromCsv() {
 
 // Run the script
 console.log("🏪 Shopify Inventory Manager");
-console.log("Reading from test.csv...\n");
+console.log("Reading from ShopifyReady.csv...\n");
 
 addInventoryFromCsv();
