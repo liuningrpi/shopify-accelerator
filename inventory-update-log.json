@@ -1,31 +1,103 @@
 {
-  "updatedAt": "2025-11-26T00:36:38.299Z",
+  "updatedAt": "2025-11-26T21:04:02.345Z",
   "locationId": "gid://shopify/Location/80964288748",
-  "totalUpdated": 3,
+  "totalUpdated": 12,
   "updates": [
     {
-      "barcode": "SH32A7B60A",
-      "productTitle": "Test Panda House Flared Cup (In-Glaze)",
+      "barcode": "CB3A142853",
+      "productTitle": "Little Elephant & Kitty Handle Tall Cup",
       "variantTitle": "Default Title",
-      "sku": "SHXM-KITCHENWARE-TPHFC(G-20251125",
+      "sku": "SHXM-KITCHENWARE-LE&KHTC-20251126",
       "oldQuantity": 0,
-      "newQuantity": 3
+      "newQuantity": 1
     },
     {
-      "barcode": "SH9A2A223B",
-      "productTitle": "Test Christmas Orca Footed Cup",
-      "variantTitle": "Red",
-      "sku": "SHXM-KITCHENWARE-TCOFC-20251125-RED",
+      "barcode": "CB73EFE257",
+      "productTitle": "Cat & Train Ceramic Mug",
+      "variantTitle": "Default Title",
+      "sku": "SHXM-KITCHENWARE-C&TCM-20251126",
       "oldQuantity": 0,
-      "newQuantity": 5
+      "newQuantity": 1
     },
     {
-      "barcode": "SHC64C0751",
-      "productTitle": "Test Christmas Orca Footed Cup",
-      "variantTitle": "Blue",
-      "sku": "SHXM-KITCHENWARE-TCOFC-20251125-BLUE",
+      "barcode": "CBFF8DD959",
+      "productTitle": "Cute Bear Apple Puzzle Handle Mug",
+      "variantTitle": "Default Title",
+      "sku": "SHXM-KITCHENWARE-CBAPHM-20251126",
       "oldQuantity": 0,
-      "newQuantity": 4
+      "newQuantity": 1
+    },
+    {
+      "barcode": "CB04DA5EA9",
+      "productTitle": "Cat House Forest Mug Set",
+      "variantTitle": "Default Title",
+      "sku": "SHXM-KITCHENWARE-CHFMS-20251126",
+      "oldQuantity": 0,
+      "newQuantity": 1
+    },
+    {
+      "barcode": "CB8F559C12",
+      "productTitle": "Floral Cat Plate",
+      "variantTitle": "Default Title",
+      "sku": "SHXM-KITCHENWARE-FCP-20251126",
+      "oldQuantity": 0,
+      "newQuantity": 1
+    },
+    {
+      "barcode": "CBF543EF31",
+      "productTitle": "Cat & Big Tree Mug",
+      "variantTitle": "Default Title",
+      "sku": "SHXM-KITCHENWARE-C&BTM-20251126",
+      "oldQuantity": 0,
+      "newQuantity": 1
+    },
+    {
+      "barcode": "CB1E2FA212",
+      "productTitle": "Little Bear Floral Stripe Cola Cup",
+      "variantTitle": "Default Title",
+      "sku": "SHXM-KITCHENWARE-LBFSCC-20251126",
+      "oldQuantity": 0,
+      "newQuantity": 1
+    },
+    {
+      "barcode": "CBFFE84DB6",
+      "productTitle": "Cat & Flowers Mosaic Mug",
+      "variantTitle": "Default Title",
+      "sku": "SHXM-KITCHENWARE-C&FMM-20251126",
+      "oldQuantity": 0,
+      "newQuantity": 1
+    },
+    {
+      "barcode": "CB562848A7",
+      "productTitle": "Cat Studying Mug",
+      "variantTitle": "Default Title",
+      "sku": "SHXM-KITCHENWARE-CSM-20251126",
+      "oldQuantity": 0,
+      "newQuantity": 1
+    },
+    {
+      "barcode": "CB93E4225C",
+      "productTitle": "Cat Mosaic Stemmed Cup",
+      "variantTitle": "Default Title",
+      "sku": "SHXM-KITCHENWARE-CMSC-20251126",
+      "oldQuantity": 0,
+      "newQuantity": 1
+    },
+    {
+      "barcode": "CB7B866FAD",
+      "productTitle": "Cat Laundry Mug",
+      "variantTitle": "Default Title",
+      "sku": "SHXM-KITCHENWARE-CLM-20251126",
+      "oldQuantity": 0,
+      "newQuantity": 1
+    },
+    {
+      "barcode": "CBBEA7F7FF",
+      "productTitle": "Little Girl Strawberry Mosaic Stemmed Cup",
+      "variantTitle": "Default Title",
+      "sku": "SHXM-KITCHENWARE-LGSMSC-20251126",
+      "oldQuantity": 0,
+      "newQuantity": 1
     }
   ]
 }

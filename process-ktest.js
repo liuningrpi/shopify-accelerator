@@ -8,7 +8,7 @@ const INPUT_FILE = './ktest.csv';
 const OUTPUT_FILE = './ShopifyReady.csv';
 const IMAGES_DIR = './images';
 const BARCODE_TRACKING_FILE = './barcodes-used.json';
-const VENDOR_CODE = 'SH';
+const VENDOR_CODE = 'CB';
 const BARCODE_LENGTH = 10;
 const TRANSLATE_VARIANTS = process.env.TRANSLATE_VARIANTS !== 'false'; // Default: true
 
@@ -73,12 +73,12 @@ if (fs.existsSync(BARCODE_TRACKING_FILE)) {
 }
 
 /**
- * Generate unique barcode
- * Format: SH + 8 digits (hash of Name + timestamp)
- * Algorithm: MD5(Name + timestamp) → take first 8 hex chars → convert to ensure numeric
+ * Generate unique barcode with custom prefix
+ * Format: PREFIX + 8 chars (hash of Name + timestamp)
+ * Algorithm: MD5(Name + timestamp) → take first 8 hex chars → convert to alphanumeric
  */
-function generateBarcode(name) {
-  const HASH_LENGTH = BARCODE_LENGTH - VENDOR_CODE.length;
+function generateBarcodeWithPrefix(name, prefix = VENDOR_CODE) {
+  const HASH_LENGTH = BARCODE_LENGTH - prefix.length;
 
   let barcode;
   let attempts = 0;
@@ -99,7 +99,7 @@ function generateBarcode(name) {
       .toUpperCase()
       .replace(/[^A-Z0-9]/g, '');
 
-    barcode = VENDOR_CODE + hashPart.padEnd(HASH_LENGTH, '0').substring(0, HASH_LENGTH);
+    barcode = prefix + hashPart.padEnd(HASH_LENGTH, '0').substring(0, HASH_LENGTH);
 
     attempts++;
 
@@ -112,6 +112,13 @@ function generateBarcode(name) {
   usedBarcodes.add(barcode);
 
   return barcode;
+}
+
+/**
+ * Generate unique barcode with default prefix (for backward compatibility)
+ */
+function generateBarcode(name) {
+  return generateBarcodeWithPrefix(name, VENDOR_CODE);
 }
 
 /**
@@ -215,16 +222,24 @@ function processCSV() {
 
   console.log(`📊 Total rows: ${allRows.length}`);
 
-  // Row 0: Chinese headers (skip)
-  // Row 1: English headers (use this)
-  // Row 2+: Data
-
-  if (allRows.length < 3) {
-    throw new Error('CSV file must have at least 3 rows (Chinese headers, English headers, data)');
+  // Find the header row - look for row containing 'Photo' and 'Name'
+  let headerRowIndex = -1;
+  for (let i = 0; i < allRows.length; i++) {
+    const row = allRows[i];
+    // Check if this row contains key column names
+    if (row.includes('Photo') && row.includes('Name') && row.includes('IfNew')) {
+      headerRowIndex = i;
+      console.log(`📋 Found headers at row ${i + 1}`);
+      break;
+    }
   }
 
-  const headers = allRows[1]; // Second row as headers
-  const dataRows = allRows.slice(2); // Data starts from row 3
+  if (headerRowIndex === -1) {
+    throw new Error('Could not find header row in CSV. Expected row with Photo, Name, IfNew columns.');
+  }
+
+  const headers = allRows[headerRowIndex]; // Header row
+  const dataRows = allRows.slice(headerRowIndex + 1); // Data starts after header row
 
   console.log(`📋 Headers: ${headers.join(', ')}`);
   console.log(`📊 Data rows: ${dataRows.length}`);
@@ -233,23 +248,33 @@ function processCSV() {
   const getColumnIndex = (name) => headers.findIndex(h => h.trim() === name);
 
   const photoIdx = getColumnIndex('Photo');
+  const photoNameIdx = getColumnIndex('PhotoName');
   const nameCNIdx = getColumnIndex('NameCN');
   const nameIdx = getColumnIndex('Name');
   const option1NameIdx = getColumnIndex('Option1 Name');
   const option1ValueIdx = getColumnIndex('Option1 Value');
   const variantInventoryIdx = getColumnIndex('Variant Inventory');
   const priceCNIdx = getColumnIndex('PriceCN');
+  const discountIdx = getColumnIndex('Discount');
+  const salePriceCNIdx = getColumnIndex('SalePriceCN');
   const ifNewIdx = getColumnIndex('IfNew');
+  const barcodeIdx = getColumnIndex('Barcode');
+  const vendorIdx = getColumnIndex('Vendor');
 
   console.log(`\n📍 Column indices:`);
   console.log(`   Photo: ${photoIdx}`);
+  console.log(`   PhotoName: ${photoNameIdx} (optional, preferred if present)`);
   console.log(`   NameCN: ${nameCNIdx} (will be ignored)`);
   console.log(`   Name: ${nameIdx}`);
   console.log(`   Option1 Name: ${option1NameIdx}`);
   console.log(`   Option1 Value: ${option1ValueIdx}`);
   console.log(`   Variant Inventory: ${variantInventoryIdx}`);
   console.log(`   PriceCN: ${priceCNIdx}`);
+  console.log(`   Discount: ${discountIdx}`);
+  console.log(`   SalePriceCN: ${salePriceCNIdx}`);
   console.log(`   IfNew: ${ifNewIdx}`);
+  console.log(`   Barcode: ${barcodeIdx} (optional, will generate if missing)`);
+  console.log(`   Vendor: ${vendorIdx} (optional, first 2 letters used as barcode prefix)`);
 
   // Process each row
   const outputData = [];
@@ -258,15 +283,34 @@ function processCSV() {
   console.log(`\n🔄 Processing rows...`);
 
   dataRows.forEach((row, idx) => {
-    const rowNum = idx + 3; // Actual row number in file
+    const rowNum = headerRowIndex + 2 + idx; // Actual row number in file (1-indexed)
 
-    const photoName = (row[photoIdx] || '').trim();
+    // Use PhotoName if available, otherwise use Photo
+    let photoName = '';
+    if (photoNameIdx >= 0 && row[photoNameIdx]) {
+      photoName = row[photoNameIdx].trim();
+    } else if (photoIdx >= 0 && row[photoIdx]) {
+      photoName = row[photoIdx].trim();
+    }
+
     const name = (row[nameIdx] || '').trim();
     const option1Name = (row[option1NameIdx] || '').trim();
     const option1Value = (row[option1ValueIdx] || '').trim();
     const variantInventory = (row[variantInventoryIdx] || '0').trim();
-    const priceCN = (row[priceCNIdx] || '0').trim();
     const ifNew = (row[ifNewIdx] || '').trim();
+
+    // Calculate PriceCN if missing: PriceCN = SalePriceCN * Discount
+    let priceCN = (row[priceCNIdx] || '').trim();
+    if (!priceCN || priceCN === '0' || priceCN === '') {
+      const salePriceCN = parseFloat(row[salePriceCNIdx] || '0');
+      const discount = parseFloat(row[discountIdx] || '1');
+      if (salePriceCN > 0 && discount > 0) {
+        priceCN = (salePriceCN * discount).toString();
+        console.log(`   ℹ️  Row ${rowNum}: Calculated PriceCN = ${salePriceCN} × ${discount} = ${priceCN}`);
+      } else {
+        priceCN = '0';
+      }
+    }
 
     // Translate variant names if enabled
     const option1NameEN = translate(option1Name);
@@ -277,9 +321,34 @@ function processCSV() {
       return;
     }
 
-    // For variants, include the variant value in barcode generation to ensure uniqueness
-    const barcodeInput = option1Value ? `${name}_${option1Value}` : name;
-    const barcode = generateBarcode(barcodeInput);
+    // Determine barcode prefix from Vendor column or use default
+    let barcodePrefix = VENDOR_CODE; // Default: CB
+    if (vendorIdx >= 0 && row[vendorIdx] && row[vendorIdx].trim()) {
+      const vendor = row[vendorIdx].trim();
+      // Use first 2 letters of vendor name (uppercase)
+      barcodePrefix = vendor.substring(0, 2).toUpperCase().replace(/[^A-Z]/g, '');
+      // If less than 2 letters after filtering, pad or use default
+      if (barcodePrefix.length < 2) {
+        barcodePrefix = VENDOR_CODE;
+      }
+    }
+
+    // Check if barcode exists in CSV, otherwise generate new one
+    let barcode = '';
+    let barcodeSource = '';
+
+    if (barcodeIdx >= 0 && row[barcodeIdx] && row[barcodeIdx].trim()) {
+      // Use existing barcode from CSV
+      barcode = row[barcodeIdx].trim();
+      barcodeSource = 'existing';
+      // Add to used barcodes to prevent duplicates
+      usedBarcodes.add(barcode);
+    } else {
+      // Generate new barcode with determined prefix
+      const barcodeInput = option1Value ? `${name}_${option1Value}` : name;
+      barcode = generateBarcodeWithPrefix(barcodeInput, barcodePrefix);
+      barcodeSource = `generated (${barcodePrefix})`;
+    }
 
     // Build full product name with variant
     let fullName = name;
@@ -296,8 +365,18 @@ function processCSV() {
     const salePrice = calculateSalePrice(priceCN);
 
     console.log(`✅ Row ${rowNum}: ${fullName}`);
-    console.log(`   Barcode: ${barcode}`);
-    console.log(`   Photo: ${photoName} → ${photoFilename}`);
+    if (barcodeSource === 'existing') {
+      console.log(`   Barcode: ${barcode} (from CSV)`);
+    } else {
+      console.log(`   Barcode: ${barcode} (generated)`);
+    }
+
+    // Show photo source
+    if (photoNameIdx >= 0 && row[photoNameIdx]) {
+      console.log(`   Photo: ${photoName} (from PhotoName column) → ${photoFilename}`);
+    } else {
+      console.log(`   Photo: ${photoName} → ${photoFilename}`);
+    }
     if (option1Value) {
       console.log(`   Variant: ${option1Name} = ${option1Value}`);
       if (TRANSLATE_VARIANTS && (option1NameEN !== option1Name || option1ValueEN !== option1Value)) {
@@ -366,7 +445,7 @@ function processCSV() {
 
   console.log('\n📝 Barcode Generation Algorithm:');
   console.log('   Format: VENDOR_CODE (2 chars) + HASH (8 chars)');
-  console.log('   Example: SH + 8 alphanumeric chars');
+  console.log('   Example: CB + 8 alphanumeric chars');
   console.log('   Method: MD5(Name + Timestamp + Attempt) → First 8 hex chars');
   console.log('   Uniqueness: Checked against barcodes-used.json');
   console.log('   Forward-safe: All generated barcodes are tracked for future runs');
