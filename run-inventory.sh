@@ -8,8 +8,8 @@ echo "=============================================="
 echo "Shop: $SHOP_DOMAIN"
 echo "Source: ShopifyReady.csv"
 echo ""
-echo "Pass 1: Add new products (IfNew = Y)"
-echo "Pass 2: Update inventory quantities for all products"
+echo "Pass 1: Add new products (IfNew = Y) with stock = 0"
+echo "Pass 2: Add inventory quantities for all products"
 echo "=============================================="
 echo ""
 
@@ -29,8 +29,8 @@ if [ $? -eq 0 ]; then
     sleep 3
     echo ""
 
-    # PASS 2: Update inventory quantities for all products
-    echo "🔄 PASS 2: Updating Inventory Quantities"
+    # PASS 2: Add inventory quantities for all products
+    echo "📦 PASS 2: Adding Inventory Quantities"
     echo "─────────────────────────────────────────────"
     node update-inventory-by-barcode.js ShopifyReady.csv
 

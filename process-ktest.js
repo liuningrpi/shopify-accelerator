@@ -321,33 +321,69 @@ function processCSV() {
       return;
     }
 
-    // Determine barcode prefix from Vendor column or use default
-    let barcodePrefix = VENDOR_CODE; // Default: CB
-    if (vendorIdx >= 0 && row[vendorIdx] && row[vendorIdx].trim()) {
-      const vendor = row[vendorIdx].trim();
-      // Use first 2 letters of vendor name (uppercase)
-      barcodePrefix = vendor.substring(0, 2).toUpperCase().replace(/[^A-Z]/g, '');
-      // If less than 2 letters after filtering, pad or use default
-      if (barcodePrefix.length < 2) {
-        barcodePrefix = VENDOR_CODE;
-      }
-    }
-
-    // Check if barcode exists in CSV, otherwise generate new one
+    // Barcode logic based on IfNew status
     let barcode = '';
     let barcodeSource = '';
 
-    if (barcodeIdx >= 0 && row[barcodeIdx] && row[barcodeIdx].trim()) {
-      // Use existing barcode from CSV
-      barcode = row[barcodeIdx].trim();
-      barcodeSource = 'existing';
-      // Add to used barcodes to prevent duplicates
-      usedBarcodes.add(barcode);
-    } else {
+    if (ifNew === 'Y') {
+      // NEW PRODUCT: Generate new barcode using algorithm
+      // Determine barcode prefix from Vendor column or use default
+      let barcodePrefix = VENDOR_CODE; // Default: CB
+      if (vendorIdx >= 0 && row[vendorIdx] && row[vendorIdx].trim()) {
+        const vendor = row[vendorIdx].trim();
+        // Use first 2 letters of vendor name (uppercase)
+        barcodePrefix = vendor.substring(0, 2).toUpperCase().replace(/[^A-Z]/g, '');
+        // If less than 2 letters after filtering, use default
+        if (barcodePrefix.length < 2) {
+          barcodePrefix = VENDOR_CODE;
+        }
+      }
+
       // Generate new barcode with determined prefix
       const barcodeInput = option1Value ? `${name}_${option1Value}` : name;
       barcode = generateBarcodeWithPrefix(barcodeInput, barcodePrefix);
       barcodeSource = `generated (${barcodePrefix})`;
+    } else {
+      // OLD PRODUCT (IfNew = 'N'): Use barcode from Barcode column
+      if (barcodeIdx >= 0 && row[barcodeIdx] && row[barcodeIdx].trim()) {
+        let rawBarcode = row[barcodeIdx].trim();
+
+        // Handle barcodes starting with ' (spreadsheet text format marker)
+        if (rawBarcode.startsWith("'")) {
+          rawBarcode = rawBarcode.substring(1);
+        }
+
+        // Extract only alphanumeric characters
+        barcode = rawBarcode.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+
+        if (!barcode) {
+          console.error(`\n❌ ERROR: Old product has invalid barcode!`);
+          console.error(`   Row ${rowNum}: ${name}`);
+          console.error(`   Raw barcode value: "${row[barcodeIdx].trim()}"`);
+          console.error(`   After cleaning: "${barcode}" (empty)`);
+          console.error(`\n⚠️  Barcode must contain at least one alphanumeric character.\n`);
+          throw new Error(`Row ${rowNum}: Old product "${name}" has invalid barcode`);
+        }
+
+        // Log if barcode was cleaned
+        const originalBarcode = row[barcodeIdx].trim();
+        if (originalBarcode !== barcode) {
+          barcodeSource = `from CSV (cleaned: "${originalBarcode}" → "${barcode}")`;
+        } else {
+          barcodeSource = 'from CSV';
+        }
+        // Add to used barcodes to prevent duplicates
+        usedBarcodes.add(barcode);
+      } else {
+        // No barcode found for old product - STOP SCRIPT
+        console.error(`\n❌ ERROR: Old product missing barcode!`);
+        console.error(`   Row ${rowNum}: ${name}`);
+        console.error(`   IfNew: ${ifNew}`);
+        console.error(`   Barcode column: ${barcodeIdx >= 0 ? 'exists but empty' : 'missing'}`);
+        console.error(`\n⚠️  Old products (IfNew = 'N') MUST have a barcode in the Barcode column.`);
+        console.error(`   Please add the barcode for this product and try again.\n`);
+        throw new Error(`Row ${rowNum}: Old product "${name}" is missing required barcode`);
+      }
     }
 
     // Build full product name with variant
@@ -364,12 +400,8 @@ function processCSV() {
     // Calculate sale price (rounded up)
     const salePrice = calculateSalePrice(priceCN);
 
-    console.log(`✅ Row ${rowNum}: ${fullName}`);
-    if (barcodeSource === 'existing') {
-      console.log(`   Barcode: ${barcode} (from CSV)`);
-    } else {
-      console.log(`   Barcode: ${barcode} (generated)`);
-    }
+    console.log(`✅ Row ${rowNum}: ${fullName} ${ifNew === 'Y' ? '(NEW)' : '(OLD)'}`);
+    console.log(`   Barcode: ${barcode} (${barcodeSource})`);
 
     // Show photo source
     if (photoNameIdx >= 0 && row[photoNameIdx]) {

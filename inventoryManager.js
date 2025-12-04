@@ -269,12 +269,12 @@ export async function findOrCreateProduct({
   if (variant) {
     console.log(`📦 Found existing product: ${variant.product.title} (SKU: ${sku})`);
     
-    // Update existing variant to enable tracking and set inventory
+    // Update existing variant to enable tracking (set inventory to 0, will be updated in Pass 2)
     console.log(`🔄 Updating existing product variant to enable tracking`);
     const variantUpdateData = {
       inventory_management: "shopify",
       inventory_policy: "deny", // deny = track inventory
-      inventory_quantity: quantity || 0
+      inventory_quantity: 0  // Set to 0, Pass 2 will set correct quantity
     };
 
     // Add barcode if provided
@@ -283,11 +283,9 @@ export async function findOrCreateProduct({
     }
 
     const updatedVariant = await updateVariantREST(variant.id, variantUpdateData);
-    
-    if (quantity > 0) {
-      console.log(`✅ Updated existing product with tracking enabled and ${quantity} units`);
-    }
-    
+
+    console.log(`✅ Updated existing product with tracking enabled (quantity will be set in Pass 2)`);
+
     return variant;
   }
 
@@ -315,7 +313,7 @@ export async function findOrCreateProduct({
     price: price.toString(),
     inventory_management: "shopify",
     inventory_policy: "deny", // deny = track inventory
-    inventory_quantity: quantity || 0
+    inventory_quantity: 0  // Set to 0, Pass 2 will set correct quantity
   };
 
   // Add barcode if provided
@@ -330,11 +328,8 @@ export async function findOrCreateProduct({
     await uploadProductImage(product.id, imagePath, imageAlt || title);
   }
 
-  // Inventory tracking and quantity set via variant update
-  console.log(`📈 Product created successfully with inventory tracking enabled and ${quantity || 0} units`);
-  if (quantity > 0) {
-    console.log(`✅ Initial inventory of ${quantity} units set automatically`);
-  }
+  // Inventory tracking enabled, quantity will be set in Pass 2
+  console.log(`📈 Product created successfully with inventory tracking enabled (quantity will be set in Pass 2)`);
 
   return updatedVariant;
 }
