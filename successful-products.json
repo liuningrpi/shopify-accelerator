@@ -1,20 +1,62 @@
 [
   {
-    "title": "Ginkgo Leaf Beret",
-    "sku": "SHXM-KITCHENWARE-GLB-20251203",
-    "shopify_variant_id": 47060258488556,
+    "title": "Leaf Scarf",
+    "sku": "KR-KITCHENWARE-LS-20251204-BLACK",
+    "shopify_variant_id": 47062471868652,
     "shopify_product_id": "unknown"
   },
   {
-    "title": "Purple-Grey Wool Knit Tote Bag",
-    "sku": "SHXM-KITCHENWARE-PGWKTB-20251203",
-    "shopify_variant_id": 47060258521324,
+    "title": "Hedgehog Scarf",
+    "sku": "KR-KITCHENWARE-HS-20251204-BLACK",
+    "shopify_variant_id": 47062472392940,
     "shopify_product_id": "unknown"
   },
   {
-    "title": "Bunny Lamp Small",
-    "sku": "SHXM-KITCHENWARE-BLS-20251203-S",
-    "shopify_variant_id": 47060258554092,
+    "title": "Apple Scarf",
+    "sku": "KR-KITCHENWARE-AS-20251204-BLACK",
+    "shopify_variant_id": 47062473408748,
+    "shopify_product_id": "unknown"
+  },
+  {
+    "title": "Apple Scarf",
+    "sku": "KR-KITCHENWARE-AS-20251204-GREEN",
+    "shopify_variant_id": 47062473441516,
+    "shopify_product_id": "unknown"
+  },
+  {
+    "title": "Acorn Scarf",
+    "sku": "KR-KITCHENWARE-AS-20251204-GREEN",
+    "shopify_variant_id": 47062473736428,
+    "shopify_product_id": "unknown"
+  },
+  {
+    "title": "Apple Shoulder Bag",
+    "sku": "KR-KITCHENWARE-ASB-20251204",
+    "shopify_variant_id": 47062474031340,
+    "shopify_product_id": "unknown"
+  },
+  {
+    "title": "Polka Dot Cat Beret",
+    "sku": "KR-KITCHENWARE-PDCB-20251204",
+    "shopify_variant_id": 47062475374828,
+    "shopify_product_id": "unknown"
+  },
+  {
+    "title": "Mushroom Beret",
+    "sku": "KR-KITCHENWARE-MB-20251204-GRAY",
+    "shopify_variant_id": 47062476194028,
+    "shopify_product_id": "unknown"
+  },
+  {
+    "title": "Mushroom Beret",
+    "sku": "KR-KITCHENWARE-MB-20251204-BROWN",
+    "shopify_variant_id": 47062476226796,
+    "shopify_product_id": "unknown"
+  },
+  {
+    "title": "Leaf Beret",
+    "sku": "KR-KITCHENWARE-LB-20251204-BEIGE",
+    "shopify_variant_id": 47062477570284,
     "shopify_product_id": "unknown"
   }
 ]

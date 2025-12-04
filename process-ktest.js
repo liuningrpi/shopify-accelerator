@@ -298,6 +298,7 @@ function processCSV() {
     const option1Value = (row[option1ValueIdx] || '').trim();
     const variantInventory = (row[variantInventoryIdx] || '0').trim();
     const ifNew = (row[ifNewIdx] || '').trim();
+    const vendor = (vendorIdx >= 0 && row[vendorIdx]) ? row[vendorIdx].trim() : '';
 
     // Calculate PriceCN if missing: PriceCN = SalePriceCN * Discount
     let priceCN = (row[priceCNIdx] || '').trim();
@@ -425,7 +426,8 @@ function processCSV() {
       'Variant Inventory': variantInventory,
       IfNew: ifNew,
       Barcode: barcode,
-      SalePrice: salePrice
+      SalePrice: salePrice,
+      Vendor: vendor
     });
   });
 
@@ -439,7 +441,7 @@ function processCSV() {
   console.log(`💾 Saved ${usedBarcodes.size} barcodes to: ${BARCODE_TRACKING_FILE}`);
 
   // Generate CSV output
-  const outputHeaders = ['Barcode', 'Name', 'Option1 Name', 'Option1 Value', 'Variant Inventory', 'SalePrice', 'Photo', 'IfNew'];
+  const outputHeaders = ['Barcode', 'Name', 'Option1 Name', 'Option1 Value', 'Variant Inventory', 'SalePrice', 'Photo', 'IfNew', 'Vendor'];
   const csvLines = [
     outputHeaders.join(','),
     ...outputData.map(row => {

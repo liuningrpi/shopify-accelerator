@@ -13,6 +13,7 @@ yarn-error.log*
 barcodes-used.json
 ShopifyReady.csv
 *.log
+kdocs-tokens.json
 
 # Shopify output files
 successful-products.json

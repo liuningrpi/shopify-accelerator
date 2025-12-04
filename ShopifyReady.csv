@@ -1,4 +1,11 @@
-Barcode,Name,Option1 Name,Option1 Value,Variant Inventory,SalePrice,Photo,IfNew
-KR368F753F,Ginkgo Leaf Beret,,,4,95,krphoto1.jpeg,Y
-KR74DF6319,Purple-Grey Wool Knit Tote Bag,,,1,378,krphoto2.jpeg,Y
-KR8B88A4EF,Bunny Lamp Small,Size,S,2,185,krphoto3.jpeg,Y
+Barcode,Name,Option1 Name,Option1 Value,Variant Inventory,SalePrice,Photo,IfNew,Vendor
+KR4A863A2B,Leaf Scarf,Color,Black,2,95,image2.jpeg,Y,KR
+KRDEC4F5F7,Hedgehog Scarf,Color,Black,1,95,image3.jpeg,Y,KR
+KRDE36959F,Apple Scarf,Color,Black,1,95,image4.jpeg,Y,KR
+KRC0E361E9,Apple Scarf,Color,Green,3,95,image5.jpeg,Y,KR
+KR8C6123A8,Acorn Scarf,Color,Green,1,95,image6.jpeg,Y,KR
+KRBBFD3A5A,Apple Shoulder Bag,,,1,216,image7.jpeg,Y,KR
+KR72DCAF14,Polka Dot Cat Beret,,,1,59,image8.jpeg,Y,KR
+KR6F81F6B8,Mushroom Beret,Color,Gray,4,64,image9.jpeg,Y,KR
+KRF97CE43C,Mushroom Beret,Color,Brown,3,64,image11.jpeg,Y,KR
+KR3919F929,Leaf Beret,Color,Beige,1,64,image12.jpeg,Y,KR

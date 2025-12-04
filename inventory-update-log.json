@@ -1,34 +1,97 @@
 {
-  "updatedAt": "2025-12-04T04:10:04.422Z",
+  "updatedAt": "2025-12-04T08:16:15.085Z",
   "locationId": "gid://shopify/Location/80964288748",
-  "totalUpdated": 3,
+  "totalUpdated": 10,
   "updates": [
     {
-      "barcode": "KR368F753F",
-      "productTitle": "Ginkgo Leaf Beret",
-      "variantTitle": "Default Title",
-      "sku": "SHXM-KITCHENWARE-GLB-20251203",
+      "barcode": "KR4A863A2B",
+      "productTitle": "Leaf Scarf",
+      "variantTitle": "Black",
+      "sku": "KR-KITCHENWARE-LS-20251204-BLACK",
       "oldQuantity": 0,
-      "quantityAdded": 4,
-      "newQuantity": 4
+      "quantityAdded": 2,
+      "newQuantity": 2
     },
     {
-      "barcode": "KR74DF6319",
-      "productTitle": "Purple-Grey Wool Knit Tote Bag",
-      "variantTitle": "Default Title",
-      "sku": "SHXM-KITCHENWARE-PGWKTB-20251203",
+      "barcode": "KRDEC4F5F7",
+      "productTitle": "Hedgehog Scarf",
+      "variantTitle": "Black",
+      "sku": "KR-KITCHENWARE-HS-20251204-BLACK",
       "oldQuantity": 0,
       "quantityAdded": 1,
       "newQuantity": 1
     },
     {
-      "barcode": "KR8B88A4EF",
-      "productTitle": "Bunny Lamp Small",
-      "variantTitle": "S",
-      "sku": "SHXM-KITCHENWARE-BLS-20251203-S",
+      "barcode": "KRDE36959F",
+      "productTitle": "Apple Scarf",
+      "variantTitle": "Black",
+      "sku": "KR-KITCHENWARE-AS-20251204-BLACK",
       "oldQuantity": 0,
-      "quantityAdded": 2,
-      "newQuantity": 2
+      "quantityAdded": 1,
+      "newQuantity": 1
+    },
+    {
+      "barcode": "KRC0E361E9",
+      "productTitle": "Apple Scarf",
+      "variantTitle": "Green",
+      "sku": "KR-KITCHENWARE-AS-20251204-GREEN",
+      "oldQuantity": 0,
+      "quantityAdded": 3,
+      "newQuantity": 3
+    },
+    {
+      "barcode": "KR8C6123A8",
+      "productTitle": "Acorn Scarf",
+      "variantTitle": "Green",
+      "sku": "KR-KITCHENWARE-AS-20251204-GREEN",
+      "oldQuantity": 0,
+      "quantityAdded": 1,
+      "newQuantity": 1
+    },
+    {
+      "barcode": "KRBBFD3A5A",
+      "productTitle": "Apple Shoulder Bag",
+      "variantTitle": "Default Title",
+      "sku": "KR-KITCHENWARE-ASB-20251204",
+      "oldQuantity": 0,
+      "quantityAdded": 1,
+      "newQuantity": 1
+    },
+    {
+      "barcode": "KR72DCAF14",
+      "productTitle": "Polka Dot Cat Beret",
+      "variantTitle": "Default Title",
+      "sku": "KR-KITCHENWARE-PDCB-20251204",
+      "oldQuantity": 0,
+      "quantityAdded": 1,
+      "newQuantity": 1
+    },
+    {
+      "barcode": "KR6F81F6B8",
+      "productTitle": "Mushroom Beret",
+      "variantTitle": "Gray",
+      "sku": "KR-KITCHENWARE-MB-20251204-GRAY",
+      "oldQuantity": 0,
+      "quantityAdded": 4,
+      "newQuantity": 4
+    },
+    {
+      "barcode": "KRF97CE43C",
+      "productTitle": "Mushroom Beret",
+      "variantTitle": "Brown",
+      "sku": "KR-KITCHENWARE-MB-20251204-BROWN",
+      "oldQuantity": 0,
+      "quantityAdded": 3,
+      "newQuantity": 3
+    },
+    {
+      "barcode": "KR3919F929",
+      "productTitle": "Leaf Beret",
+      "variantTitle": "Beige",
+      "sku": "KR-KITCHENWARE-LB-20251204-BEIGE",
+      "oldQuantity": 0,
+      "quantityAdded": 1,
+      "newQuantity": 1
     }
   ]
 }
