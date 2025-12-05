@@ -481,3 +481,150 @@ export async function bulkAddToInventory(productsData) {
 
   return results;
 }
+
+// Find product by title
+export async function findProductByTitle(title) {
+  const query = `
+    query findProduct($query: String!) {
+      products(first: 1, query: $query) {
+        edges {
+          node {
+            id
+            title
+            handle
+            options {
+              id
+              name
+              values
+            }
+            variants(first: 50) {
+              edges {
+                node {
+                  id
+                  title
+                  sku
+                  price
+                  barcode
+                  inventoryQuantity
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  // Search by exact title match
+  const searchQuery = `title:"${title}"`;
+
+  try {
+    const data = await shopifyGraphQL(query, { query: searchQuery });
+
+    if (data.products.edges.length > 0) {
+      return data.products.edges[0].node;
+    }
+
+    return null;
+  } catch (error) {
+    console.error(`Error finding product by title: ${error.message}`);
+    return null;
+  }
+}
+
+// Add new variants to an existing product using REST API
+export async function addVariantsToExistingProduct(productId, variantsData) {
+  console.log(`   🔧 Adding ${variantsData.length} variant(s) to product ${productId}...`);
+
+  const addedVariants = [];
+
+  // Convert GraphQL ID to numeric ID for REST API
+  const numericProductId = productId.replace('gid://shopify/Product/', '');
+
+  for (const variantData of variantsData) {
+    try {
+      // Prepare variant data for REST API
+      const variantPayload = {
+        variant: {
+          option1: variantData.option1Value,
+          price: variantData.price.toString(),
+          sku: variantData.sku,
+          inventory_management: "shopify",
+          inventory_policy: "deny",
+          inventory_quantity: 0  // Set to 0, will be updated in second pass
+        }
+      };
+
+      // Add barcode if provided
+      if (variantData.barcode) {
+        variantPayload.variant.barcode = variantData.barcode;
+      }
+
+      // Create variant using REST API
+      const { shopifyREST } = await import('./restClient.js');
+      const endpoint = `products/${numericProductId}/variants.json`;
+      const result = await shopifyREST(endpoint, 'POST', variantPayload);
+
+      if (!result.variant) {
+        throw new Error('Failed to create variant - no variant in response');
+      }
+
+      const createdVariant = {
+        id: `gid://shopify/ProductVariant/${result.variant.id}`,
+        title: result.variant.title,
+        sku: result.variant.sku,
+        price: result.variant.price,
+        barcode: result.variant.barcode,
+        inventoryQuantity: result.variant.inventory_quantity
+      };
+
+      addedVariants.push(createdVariant);
+
+      console.log(`      ✅ Created variant: ${variantData.option1Value} (SKU: ${variantData.sku})`);
+
+      // Upload image if provided
+      if (variantData.imagePath && fs.existsSync(variantData.imagePath)) {
+        try {
+          // Read image file and convert to base64
+          const imageBuffer = fs.readFileSync(variantData.imagePath);
+          const base64Image = imageBuffer.toString('base64');
+          const extension = path.extname(variantData.imagePath).toLowerCase();
+
+          let mimeType = 'image/jpeg';
+          if (extension === '.png') mimeType = 'image/png';
+          else if (extension === '.gif') mimeType = 'image/gif';
+          else if (extension === '.webp') mimeType = 'image/webp';
+
+          // Prepare image data for upload
+          const imageData = {
+            attachment: base64Image,
+            filename: path.basename(variantData.imagePath),
+            alt: variantData.imageAlt || variantData.title
+          };
+
+          // Upload image to product
+          const uploadedImage = await addProductImageREST(numericProductId, imageData);
+
+          // Associate image with variant
+          if (uploadedImage && uploadedImage.id) {
+            await updateVariantREST(createdVariant.id, {
+              image_id: uploadedImage.id
+            });
+            console.log(`      📸 Uploaded and associated image for variant: ${variantData.option1Value}`);
+          }
+        } catch (error) {
+          console.log(`      ⚠️  Failed to upload image: ${error.message}`);
+        }
+      }
+
+    } catch (error) {
+      console.error(`   ❌ Failed to add variant ${variantData.option1Value}: ${error.message}`);
+      throw error;
+    }
+
+    // Small delay between variants
+    await new Promise(resolve => setTimeout(resolve, 300));
+  }
+
+  return addedVariants;
+}

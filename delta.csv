@@ -1,4 +1,3 @@
-Barcode,Title,Vendor,Type,Option1 Name,Option1 Value,Variant Price,Variant Inventory Qty
-47306732,Test Cup,Test,Jar,Color,Pink,149,1
-47339500,Test Cup,Test,Jar,,Gray,149,4
-47372268,TTTTTT,Test,Cup,,,20,23
+Barcode,Variant Inventory,Title,SKU,Status
+YZ7B065FE7,2,"test Animal Mat",YZ-KITCHENWARE-TAM-20251205-KELP3OTTER,New
+YZ71618E8B,1,"test Animal Mat",YZ-KITCHENWARE-TAM-20251205,Existing

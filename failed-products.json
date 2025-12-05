@@ -3,14 +3,48 @@
     "success": false,
     "error": "Shopify GraphQL request failed",
     "data": {
-      "title": "Jar - Panda Color-Stripe",
-      "sku": "SHXM-J-pcs",
-      "price": 149,
-      "quantity": 10,
-      "description": "Jar - Panda Color-Stripe - High quality product from SHXM",
-      "productType": "",
-      "vendor": "SHXM",
-      "tags": []
+      "title": "test Animal Mat",
+      "sku": "YZ-KITCHENWARE-TAM-20251205-KELP2OTTER",
+      "price": 101,
+      "quantity": 2,
+      "description": "",
+      "productType": "Kitchenware",
+      "vendor": "YZ",
+      "tags": [
+        "YZ",
+        "Kitchenware"
+      ],
+      "imagePath": "./images/image (3).jpeg",
+      "imageAlt": "test Animal Mat",
+      "hasVariants": true,
+      "option1Name": "Animal",
+      "option1Value": "Kelp2 Otter",
+      "barcode": "YZD6B299E7",
+      "ifNew": "Y"
+    }
+  },
+  {
+    "success": false,
+    "error": "Shopify GraphQL request failed",
+    "data": {
+      "title": "test Animal Mat",
+      "sku": "YZ-KITCHENWARE-TAM-20251205",
+      "price": 95,
+      "quantity": 1,
+      "description": "",
+      "productType": "Kitchenware",
+      "vendor": "YZ",
+      "tags": [
+        "YZ",
+        "Kitchenware"
+      ],
+      "imagePath": "./images/image (4).jpeg",
+      "imageAlt": "test Animal Mat",
+      "hasVariants": false,
+      "option1Name": "",
+      "option1Value": "Starry Otter",
+      "barcode": "YZ71618E8B",
+      "ifNew": "N"
     }
   }
 ]

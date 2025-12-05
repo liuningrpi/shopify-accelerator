@@ -159,21 +159,66 @@ async function addInventoryFromCsv() {
           const variant = await findOrCreateProduct(variants[0]);
           results.push({ success: true, variant, data: variants[0] });
         } else {
-          // Product with multiple variants - create as one product with options
+          // Product with multiple variants - need to check if product already exists
           console.log(`\n📦 Processing: ${title} (${variants.length} variants)`);
           console.log(`   Option: ${variants[0].option1Name} with values: ${variants.map(v => v.option1Value).join(', ')}`);
 
-          const product = await createProductWithVariants(variants);
+          // Separate new and old variants
+          const newVariants = variants.filter(v => v.ifNew === 'Y');
+          const oldVariants = variants.filter(v => v.ifNew !== 'Y');
 
-          // Add all variants to results
-          variants.forEach((v, index) => {
-            results.push({
-              success: true,
-              variant: product.variants[index],
-              data: v
+          console.log(`   📊 Breakdown: ${newVariants.length} new variant(s), ${oldVariants.length} old variant(s)`);
+
+          // Check if product exists in Shopify
+          const { findProductByTitle } = await import('./inventoryManager.js');
+          const existingProduct = await findProductByTitle(title);
+
+          if (existingProduct) {
+            // Product exists - only add NEW variants
+            console.log(`   ✓ Product already exists in Shopify (ID: ${existingProduct.id})`);
+            console.log(`   → Adding ${newVariants.length} new variant(s) to existing product...`);
+
+            const { addVariantsToExistingProduct } = await import('./inventoryManager.js');
+            const addedVariants = await addVariantsToExistingProduct(existingProduct.id, newVariants);
+
+            // Add new variants to results
+            newVariants.forEach((v, index) => {
+              results.push({
+                success: true,
+                variant: addedVariants[index],
+                data: v
+              });
+              console.log(`   ✅ Added new variant: ${v.option1Value} (SKU: ${v.sku})`);
             });
-            console.log(`   ✅ Created variant: ${v.option1Value} (SKU: ${v.sku})`);
-          });
+
+            // Add old variants to results (not processed)
+            oldVariants.forEach(v => {
+              results.push({
+                success: true,
+                variant: null,
+                data: v,
+                skipped: true,
+                reason: 'Variant already exists'
+              });
+              console.log(`   ⏭️  Skipped existing variant: ${v.option1Value}`);
+            });
+
+          } else {
+            // Product doesn't exist - create new product with all variants
+            console.log(`   → Product doesn't exist, creating new product with all ${variants.length} variant(s)...`);
+
+            const product = await createProductWithVariants(variants);
+
+            // Add all variants to results
+            variants.forEach((v, index) => {
+              results.push({
+                success: true,
+                variant: product.variants[index],
+                data: v
+              });
+              console.log(`   ✅ Created variant: ${v.option1Value} (SKU: ${v.sku})`);
+            });
+          }
         }
       } catch (error) {
         console.error(`❌ Failed to process ${title}:`, error.message);
@@ -187,14 +232,16 @@ async function addInventoryFromCsv() {
     }
 
     // Show summary
-    const successful = results.filter(r => r.success).length;
+    const successful = results.filter(r => r.success && !r.skipped).length;
+    const skipped = results.filter(r => r.skipped).length;
     const failed = results.filter(r => !r.success).length;
 
     console.log("\n" + "=".repeat(60));
     console.log("🎉 Process completed!");
     console.log("=".repeat(60));
-    console.log(`✅ Successfully processed: ${successful} products`);
-    console.log(`❌ Failed to process: ${failed} products`);
+    console.log(`✅ Successfully processed: ${successful} variant(s)`);
+    console.log(`⏭️  Skipped (already exist): ${skipped} variant(s)`);
+    console.log(`❌ Failed to process: ${failed} variant(s)`);
 
     // Save failed products for review
     if (failed > 0) {
@@ -213,18 +260,51 @@ async function addInventoryFromCsv() {
 
     // Save successful products summary
     if (successful > 0) {
-      const successfulProducts = results.filter(r => r.success).map(r => ({
+      const successfulProducts = results.filter(r => r.success && !r.skipped).map(r => ({
         title: r.data.title,
         sku: r.data.sku,
         shopify_variant_id: r.variant?.id || "unknown",
         shopify_product_id: r.variant?.product?.id || "unknown"
       }));
-      
+
       fs.writeFileSync(
-        "./successful-products.json", 
+        "./successful-products.json",
         JSON.stringify(successfulProducts, null, 2)
       );
       console.log(`📊 Successful products summary saved to: successful-products.json`);
+    }
+
+    // Create delta.csv for second pass (inventory update)
+    // Include ALL variants (both new and old) for inventory sync
+    console.log("\n📝 Creating delta.csv for inventory update (second pass)...");
+
+    const allVariantsForSync = results
+      .filter(r => r.success) // Only successful items
+      .map(r => ({
+        Barcode: r.data.barcode,
+        'Variant Inventory': r.data.quantity,
+        Title: r.data.title,
+        SKU: r.data.sku,
+        Status: r.skipped ? 'Existing' : 'New'
+      }))
+      .filter(item => item.Barcode); // Only items with barcodes
+
+    if (allVariantsForSync.length > 0) {
+      // Create CSV content
+      const csvHeader = 'Barcode,Variant Inventory,Title,SKU,Status\n';
+      const csvRows = allVariantsForSync.map(item =>
+        `${item.Barcode},${item['Variant Inventory']},"${item.Title}",${item.SKU},${item.Status}`
+      ).join('\n');
+
+      fs.writeFileSync('./delta.csv', csvHeader + csvRows, 'utf8');
+
+      console.log(`✅ Created delta.csv with ${allVariantsForSync.length} variants for inventory sync`);
+      console.log(`   - New variants: ${allVariantsForSync.filter(v => v.Status === 'New').length}`);
+      console.log(`   - Existing variants: ${allVariantsForSync.filter(v => v.Status === 'Existing').length}`);
+      console.log(`\n💡 Next step: Run inventory sync with:`);
+      console.log(`   node update-inventory-by-barcode.js delta.csv`);
+    } else {
+      console.log(`⚠️  No variants with barcodes to sync`);
     }
 
   } catch (error) {

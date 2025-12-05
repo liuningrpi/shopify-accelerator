@@ -1,62 +1,8 @@
 [
   {
-    "title": "Leaf Scarf",
-    "sku": "KR-KITCHENWARE-LS-20251204-BLACK",
-    "shopify_variant_id": 47062471868652,
-    "shopify_product_id": "unknown"
-  },
-  {
-    "title": "Hedgehog Scarf",
-    "sku": "KR-KITCHENWARE-HS-20251204-BLACK",
-    "shopify_variant_id": 47062472392940,
-    "shopify_product_id": "unknown"
-  },
-  {
-    "title": "Apple Scarf",
-    "sku": "KR-KITCHENWARE-AS-20251204-BLACK",
-    "shopify_variant_id": 47062473408748,
-    "shopify_product_id": "unknown"
-  },
-  {
-    "title": "Apple Scarf",
-    "sku": "KR-KITCHENWARE-AS-20251204-GREEN",
-    "shopify_variant_id": 47062473441516,
-    "shopify_product_id": "unknown"
-  },
-  {
-    "title": "Acorn Scarf",
-    "sku": "KR-KITCHENWARE-AS-20251204-GREEN",
-    "shopify_variant_id": 47062473736428,
-    "shopify_product_id": "unknown"
-  },
-  {
-    "title": "Apple Shoulder Bag",
-    "sku": "KR-KITCHENWARE-ASB-20251204",
-    "shopify_variant_id": 47062474031340,
-    "shopify_product_id": "unknown"
-  },
-  {
-    "title": "Polka Dot Cat Beret",
-    "sku": "KR-KITCHENWARE-PDCB-20251204",
-    "shopify_variant_id": 47062475374828,
-    "shopify_product_id": "unknown"
-  },
-  {
-    "title": "Mushroom Beret",
-    "sku": "KR-KITCHENWARE-MB-20251204-GRAY",
-    "shopify_variant_id": 47062476194028,
-    "shopify_product_id": "unknown"
-  },
-  {
-    "title": "Mushroom Beret",
-    "sku": "KR-KITCHENWARE-MB-20251204-BROWN",
-    "shopify_variant_id": 47062476226796,
-    "shopify_product_id": "unknown"
-  },
-  {
-    "title": "Leaf Beret",
-    "sku": "KR-KITCHENWARE-LB-20251204-BEIGE",
-    "shopify_variant_id": 47062477570284,
+    "title": "test Animal Mat",
+    "sku": "YZ-KITCHENWARE-TAM-20251205-KELP3OTTER",
+    "shopify_variant_id": "gid://shopify/ProductVariant/47070788518124",
     "shopify_product_id": "unknown"
   }
 ]
